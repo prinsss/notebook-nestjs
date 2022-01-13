@@ -10,14 +10,9 @@ import {
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { Public } from './decorators/public.decorator'
+import { LoginDto } from './dto/login.dto'
+import { RegisterDto } from './dto/register.dto'
 import { AuthenticatedRequest } from './interfaces/request.interface'
-
-// Should be replaced with real DTOs later
-export interface LoginDto {
-  username: string
-  password: string
-}
-export type RegisterDto = LoginDto
 
 @Controller('api/auth')
 export class AuthController {
