@@ -3,16 +3,17 @@ import {
   ValidationError,
   ValidationPipe as BasePipe
 } from '@nestjs/common'
+import { ErrorResponse } from './error-response.interface'
 
 export class ValidationPipe extends BasePipe {
   createExceptionFactory() {
     return (validationErrors: ValidationError[] = []) => {
-      const errors = this.flattenValidationErrors(validationErrors)
-      return new UnprocessableEntityException({
+      const response: ErrorResponse = {
         code: 422,
-        message: 'Validation error',
-        errors
-      })
+        message: 'Validation failed',
+        errors: this.flattenValidationErrors(validationErrors)
+      }
+      return new UnprocessableEntityException(response)
     }
   }
 
