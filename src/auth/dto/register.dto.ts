@@ -1,5 +1,5 @@
 import {
-  IsAscii,
+  IsEmail,
   IsNotEmpty,
   IsOptional,
   MaxLength,
@@ -7,9 +7,9 @@ import {
 } from 'class-validator'
 
 export class RegisterDto {
-  @IsAscii()
+  @IsEmail()
   @IsNotEmpty()
-  username: string
+  email: string
 
   @MinLength(8)
   @MaxLength(32)

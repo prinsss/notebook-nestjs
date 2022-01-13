@@ -1,28 +1,38 @@
 import { Injectable } from '@nestjs/common'
-
-// This should be a real class/interface representing a user entity
-export interface User {
-  userId: number
-  username: string
-  password: string
-}
+import { InjectRepository } from '@nestjs/typeorm'
+import {
+  DeepPartial,
+  FindManyOptions,
+  FindOneOptions,
+  Repository
+} from 'typeorm'
+import { User } from './entities/user.entity'
 
 @Injectable()
 export class UsersService {
-  private readonly users = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme'
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess'
-    }
-  ]
+  constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>
+  ) {}
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find((user) => user.username === username)
+  async find(options?: FindManyOptions): Promise<User[]> {
+    return await this.usersRepository.find(options)
+  }
+
+  async findOne(options?: FindOneOptions): Promise<User | undefined> {
+    return await this.usersRepository.findOne(options)
+  }
+
+  async create(userLike: DeepPartial<User>): Promise<User> {
+    const user = this.usersRepository.create(userLike)
+    return await this.usersRepository.save(user)
+  }
+
+  async update(user: User): Promise<User> {
+    return await this.usersRepository.save(user)
+  }
+
+  async remove(user: User): Promise<User> {
+    return await this.usersRepository.softRemove(user)
   }
 }
