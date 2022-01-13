@@ -15,4 +15,9 @@ describe('UsersService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined()
   })
+
+  it('should find user by username', async () => {
+    const user = await service.findOne('maria')
+    expect(user?.password).toEqual('guess')
+  })
 })
