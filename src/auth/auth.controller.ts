@@ -6,11 +6,10 @@ import {
   NotImplementedException,
   Post,
   Request,
-  UnauthorizedException,
-  UseGuards
+  UnauthorizedException
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
-import { JwtAuthGuard } from './guards/jwt-auth.guard'
+import { Public } from './decorators/public.decorator'
 import { AuthenticatedRequest } from './interfaces/request.interface'
 
 // Should be replaced with real DTOs later
@@ -24,6 +23,7 @@ export type RegisterDto = LoginDto
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('login')
   @HttpCode(200)
   async login(@Body() dto: LoginDto) {
@@ -36,12 +36,12 @@ export class AuthController {
     return { accessToken, user }
   }
 
+  @Public()
   @Post('register')
   async register(@Body() dto: RegisterDto) {
     throw new NotImplementedException()
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('whoami')
   getCurrentUser(@Request() req: AuthenticatedRequest) {
     return req.user
