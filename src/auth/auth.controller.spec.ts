@@ -1,17 +1,12 @@
-import { UnauthorizedException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
+import { testUser } from 'src/users/users.service.spec'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 
-const mockedAuthService = {
+const mockAuthService = {
   validateUser: jest.fn(),
-  signJwt: jest.fn((user: any) => user.username)
-}
-
-const user = {
-  userId: 2,
-  username: 'maria',
-  password: 'guess'
+  createUser: jest.fn(),
+  signJwt: jest.fn((user: any) => user.id)
 }
 
 describe('AuthController', () => {
@@ -23,7 +18,7 @@ describe('AuthController', () => {
       providers: [
         {
           provide: AuthService,
-          useValue: mockedAuthService
+          useValue: mockAuthService
         }
       ]
     }).compile()
@@ -36,19 +31,27 @@ describe('AuthController', () => {
   })
 
   it('should login users', async () => {
-    mockedAuthService.validateUser
-      .mockReturnValueOnce(user)
-      .mockReturnValueOnce(null)
+    const { email, password } = testUser
+    mockAuthService.validateUser.mockReturnValueOnce(testUser)
 
-    expect(await controller.login(user)).toEqual({
-      user,
-      accessToken: user.username
+    expect(await controller.login({ email, password })).toEqual({
+      user: testUser,
+      accessToken: testUser.id
     })
-    await expect(controller.login(user)).rejects.toThrow(UnauthorizedException)
+  })
+
+  it('should register users', async () => {
+    const { email, password, nickname } = testUser
+    mockAuthService.createUser.mockReturnValueOnce(testUser)
+
+    expect(await controller.register({ email, password, nickname })).toEqual({
+      user: testUser,
+      accessToken: testUser.id
+    })
   })
 
   it('should show whoami', () => {
-    const req: any = { user }
-    expect(controller.getCurrentUser(req)).toEqual(user)
+    const req: any = { user: testUser }
+    expect(controller.getCurrentUser(req)).toEqual(testUser)
   })
 })

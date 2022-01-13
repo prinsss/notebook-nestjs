@@ -1,59 +1,75 @@
+import { ConflictException, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test, TestingModule } from '@nestjs/testing'
-import { UsersModule } from 'src/users/users.module'
 import { UsersService } from 'src/users/users.service'
+import { testUser } from 'src/users/users.service.spec'
 import { AuthService } from './auth.service'
 
-const mockedJwtService = {
+const mockJwtService = {
   sign: jest.fn((payload: any) => payload.sub)
 }
 
-const user = {
-  userId: 2,
-  username: 'maria',
-  password: 'guess'
+const mockUsersService = {
+  findOne: jest.fn(),
+  create: jest.fn()
 }
 
 describe('AuthService', () => {
-  let authService: AuthService
-  let usersService: UsersService
+  let service: AuthService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [UsersModule],
       providers: [
         AuthService,
         {
+          provide: UsersService,
+          useValue: mockUsersService
+        },
+        {
           provide: JwtService,
-          useValue: mockedJwtService
+          useValue: mockJwtService
         }
       ]
     }).compile()
 
-    authService = module.get<AuthService>(AuthService)
-    usersService = module.get<UsersService>(UsersService)
+    service = module.get<AuthService>(AuthService)
   })
 
   it('should be defined', () => {
-    expect(authService).toBeDefined()
+    expect(service).toBeDefined()
   })
 
   it('should validate user', async () => {
-    const { password, ...omitted } = user
+    const { email, password } = testUser
+    mockUsersService.findOne
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValue(testUser)
 
-    jest
-      .spyOn(usersService, 'findOne')
-      .mockImplementation(
-        async (username: string) => await Promise.resolve(user)
-      )
+    await expect(service.validateUser(email, password)).rejects.toThrow(
+      UnauthorizedException
+    )
+    expect(await service.validateUser(email, '12345678')).toEqual(testUser)
+    await expect(service.validateUser(email, 'wrong')).rejects.toThrow(
+      UnauthorizedException
+    )
+  })
 
-    let result = await authService.validateUser(user.username, user.password)
-    expect(result).toMatchObject(omitted)
-    result = await authService.validateUser(user.username, 'wrong')
-    expect(result).toBeNull()
+  it('should create user', async () => {
+    const { email, password, nickname } = testUser
+    mockUsersService.findOne
+      .mockResolvedValueOnce(testUser)
+      .mockResolvedValue(undefined)
+    mockUsersService.create.mockResolvedValueOnce(testUser)
+
+    await expect(service.createUser(email, password, nickname)).rejects.toThrow(
+      ConflictException
+    )
+    expect(await service.createUser(email, password, nickname)).toEqual(
+      testUser
+    )
   })
 
   it('should sign jwt', () => {
-    expect(authService.signJwt(user)).toEqual(user.userId.toString())
+    expect(service.signJwt(testUser)).toEqual(testUser.id)
   })
 })
