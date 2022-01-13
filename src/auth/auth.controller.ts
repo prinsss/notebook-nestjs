@@ -5,9 +5,13 @@ import {
   HttpCode,
   NotImplementedException,
   Post,
-  UnauthorizedException
+  Request,
+  UnauthorizedException,
+  UseGuards
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
+import { JwtAuthGuard } from './guards/jwt-auth.guard'
+import { AuthenticatedRequest } from './interfaces/request.interface'
 
 // Should be replaced with real DTOs later
 export interface LoginDto {
@@ -24,11 +28,12 @@ export class AuthController {
   @HttpCode(200)
   async login(@Body() dto: LoginDto) {
     const user = await this.authService.validateUser(dto.username, dto.password)
-    if (user) {
-      return { user }
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials')
     }
 
-    throw new UnauthorizedException()
+    const accessToken = this.authService.signJwt(user)
+    return { accessToken, user }
   }
 
   @Post('register')
@@ -36,8 +41,9 @@ export class AuthController {
     throw new NotImplementedException()
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('whoami')
-  getCurrentUser() {
-    throw new NotImplementedException()
+  getCurrentUser(@Request() req: AuthenticatedRequest) {
+    return req.user
   }
 }
