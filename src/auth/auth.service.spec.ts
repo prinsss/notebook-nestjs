@@ -1,8 +1,8 @@
 import { ConflictException, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test, TestingModule } from '@nestjs/testing'
+import { User } from 'src/users/entities/user.entity'
 import { UsersService } from 'src/users/users.service'
-import { testUser } from 'src/users/users.service.spec'
 import { AuthService } from './auth.service'
 
 const mockJwtService = {
@@ -12,6 +12,17 @@ const mockJwtService = {
 const mockUsersService = {
   findOne: jest.fn(),
   create: jest.fn()
+}
+
+export const testUser: User = {
+  id: '6a3b5548-a3bc-45f5-bb0e-a936f300a5df',
+  email: 'john@test.com',
+  password: '$2b$10$TxFP8b.c16rk0wkDhWSbTelNOqFSDwoIH2vtM2tV6xuGPzv3ZIq8W',
+  nickname: 'Johnny',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  hashPassword: jest.fn(),
+  toJSON: jest.fn()
 }
 
 describe('AuthService', () => {

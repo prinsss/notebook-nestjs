@@ -3,7 +3,7 @@ import { BaseEntity } from 'src/common/base.entity'
 import { createPassword } from 'src/common/utils'
 import { Entity, Column, BeforeInsert } from 'typeorm'
 
-@Entity({ name: 'users' })
+@Entity('users')
 export class User extends BaseEntity {
   @Column()
   email: string

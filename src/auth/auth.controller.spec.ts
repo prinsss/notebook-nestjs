@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { testUser } from 'src/users/users.service.spec'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
+import { testUser } from './auth.service.spec'
 
 const mockAuthService = {
   validateUser: jest.fn(),
