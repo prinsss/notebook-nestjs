@@ -4,9 +4,11 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
-  Logger
+  Logger,
+  NotFoundException
 } from '@nestjs/common'
 import { Request, Response } from 'express'
+import { EntityNotFoundError } from 'typeorm'
 import { ErrorResponse } from './error-response.interface'
 
 @Catch()
@@ -15,6 +17,11 @@ export class AllExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp()
     const request = ctx.getRequest<Request>()
     const response = ctx.getResponse<Response>()
+
+    // Treat TypeORM not found error as 404
+    if (exception instanceof EntityNotFoundError) {
+      exception = new NotFoundException()
+    }
 
     const status =
       exception instanceof HttpException
