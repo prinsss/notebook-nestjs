@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { NotesModule } from './notes/notes.module'
 
 const NODE_ENV = process.env.NODE_ENV ?? 'development'
 
@@ -36,7 +37,8 @@ const NODE_ENV = process.env.NODE_ENV ?? 'development'
       })
     }),
     AuthModule,
-    UsersModule
+    UsersModule,
+    NotesModule
   ],
   controllers: [AppController],
   providers: [AppService]
