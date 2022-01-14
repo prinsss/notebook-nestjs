@@ -1,7 +1,8 @@
 import { Exclude } from 'class-transformer'
 import { BaseEntity } from 'src/common/base.entity'
 import { createPassword } from 'src/common/utils'
-import { Entity, Column, BeforeInsert } from 'typeorm'
+import { Note } from 'src/notes/entities/note.entity'
+import { Entity, Column, BeforeInsert, OneToMany } from 'typeorm'
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -14,6 +15,9 @@ export class User extends BaseEntity {
 
   @Column({ nullable: true })
   nickname?: string
+
+  @OneToMany(() => Note, (note) => note.user)
+  notes: Note[]
 
   @BeforeInsert()
   async hashPassword() {

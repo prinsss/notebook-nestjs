@@ -19,6 +19,7 @@ export const testUser: User = {
   email: 'john@test.com',
   password: '$2b$10$TxFP8b.c16rk0wkDhWSbTelNOqFSDwoIH2vtM2tV6xuGPzv3ZIq8W',
   nickname: 'Johnny',
+  notes: [],
   createdAt: new Date(),
   updatedAt: new Date(),
   hashPassword: jest.fn(),

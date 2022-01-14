@@ -1,5 +1,7 @@
+import { Exclude } from 'class-transformer'
 import { BaseEntity } from 'src/common/base.entity'
-import { Entity, Column } from 'typeorm'
+import { User } from 'src/users/entities/user.entity'
+import { Entity, Column, ManyToOne } from 'typeorm'
 
 @Entity('notes')
 export class Note extends BaseEntity {
@@ -8,4 +10,8 @@ export class Note extends BaseEntity {
 
   @Column({ nullable: true })
   content?: string
+
+  @Exclude()
+  @ManyToOne(() => User, (user) => user.notes)
+  user: User
 }
