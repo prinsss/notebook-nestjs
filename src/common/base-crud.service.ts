@@ -18,8 +18,8 @@ export class BaseCrudService<T> {
     return await this.repo.findOne(options)
   }
 
-  async findById(id: string): Promise<T | undefined> {
-    return await this.repo.findOne(id)
+  async findById(id: string, options?: FindOneOptions): Promise<T | undefined> {
+    return await this.repo.findOne(id, options)
   }
 
   async create(dto: DeepPartial<T>): Promise<T> {
